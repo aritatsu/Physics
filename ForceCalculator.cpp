@@ -16,7 +16,7 @@ glm::vec3 ForceCalculator::getImpulse(RigidBody* body1, RigidBody* body2, const 
 	const auto m1inv = body1->getMass() ? 1.f / body1->getMass() : 0.f;
 	const auto m2inv = body2->getMass() ? 1.f / body2->getMass() : 0.f;
 	const auto Inv1 = body1->getMomentofInertia() != glm::mat3{ 0.f } ? glm::inverse(body1->getMomentofInertia()) : glm::mat3{ 0.f };
-	const auto Inv2 = body2->getMomentofInertia() != glm::mat3{ 0.f } ? glm::inverse(body1->getMomentofInertia()) : glm::mat3{ 0.f };
+	const auto Inv2 = body2->getMomentofInertia() != glm::mat3{ 0.f } ? glm::inverse(body2->getMomentofInertia()) : glm::mat3{ 0.f };
 	const auto r1 = collision_point - body1->getPosition();
 	const auto r2 = collision_point - body2->getPosition();
 	const auto n = collision_data.mNormal;

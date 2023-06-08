@@ -45,7 +45,7 @@ void Model::draw()
 			break;
 		// ’¼•û‘Ì
 		case mygx::Model::Box:
-			glutSolidCube(2.f);
+			glutSolidCube(1.f);
 			break;
 		// ZX•½–Ê
 		case mygx::Model::ZXPlane:

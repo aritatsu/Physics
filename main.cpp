@@ -74,8 +74,8 @@ void Init()
 	gSphereModel.setScale({ radius, radius, radius });
 	gSphereModel.updateMatrix();
 
-	gRigidBox.setPosition({ 0.f, -1.f, 0.f });
-	gRigidBox.setCollisionShape(new myfx::CubeShape({ 5.f, 1.f, 5.f }));
+	gRigidBox.setPosition({ 0.f, -0.5f, 0.f });
+	gRigidBox.setCollisionShape(new myfx::CubeShape({ 10.f, 1.f, 10.f }));
 	gRigidBox.setMass(0.f);
 	gRigidBox.updateMomentofInertia();
 	gBoxModel.setModelType(mygx::Model::Box);
