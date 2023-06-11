@@ -3,6 +3,8 @@
 #include "CubeShape.h"
 #include "SphereShape.h"
 
+#include <gtx/rotate_vector.hpp>
+
 namespace myfx
 {
 //-----------------------------------------------------------------------------
@@ -63,18 +65,37 @@ void RigidBody::updateMomentofInertia()
 	}
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 void RigidBody::stepTime(glm::f32 dt)
 {
-	glm::vec3 acceleration{ 0.f };
-	if (getMass())
-	{
-		acceleration = getForce() / getMass();
-	}
+	// ï¿êiâ^ìÆ
+	glm::vec3 acceleration{ getMassInverse() * getForce() };
 
 	setVelocity(getVelcoity() + acceleration * dt);
 
 	setPosition(getPosition() + getVelcoity() * dt);
+
+
+	// âÒì]â^ìÆ
+	glm::vec3 angular_acceleration{ getMomentofInertiaInverse() * getTorque() };
+	
+	setAngularVelocity(getAngularVelocity() + angular_acceleration * dt);
+	
+	glm::vec3 axis{ glm::normalize(getAngularVelocity()) };
+	const glm::f32 rad{ glm::length(getAngularVelocity()) * dt };
+	if (rad < 0.001f)
+	{
+		return;
+	}
+	glm::mat3 rot = getRotation();
+	for (int idx = 0; idx < 3; idx++)
+	{
+		rot[idx] = glm::rotate(rot[idx], rad, axis);
+		rot[idx] = glm::normalize(rot[idx]);
+	}
+	setRotation(rot);
 }
+#endif
 
 }

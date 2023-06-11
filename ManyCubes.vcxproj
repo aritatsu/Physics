@@ -146,9 +146,11 @@
     <ClCompile Include="CubeShape.cpp" />
     <ClCompile Include="ForceCalculator.cpp" />
     <ClCompile Include="Inertia.cpp" />
+    <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Motion.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="Power.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SphereShape.cpp" />
@@ -162,8 +164,10 @@
     <ClInclude Include="ICollisionShape.h" />
     <ClInclude Include="ForceCalculator.h" />
     <ClInclude Include="Inertia.h" />
+    <ClInclude Include="Integrator.h" />
     <ClInclude Include="Motion.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="Power.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SphereShape.h" />

@@ -49,7 +49,7 @@ public:
 	// SRT行列を更新する
 	void updateMatrix()
 	{
-		mSRTMatrix = mSMatrix * mRTMatrix;
+		mSRTMatrix = mRTMatrix * mSMatrix;
 	}
 
 	// 色を設定する

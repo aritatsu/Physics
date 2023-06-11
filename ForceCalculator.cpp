@@ -13,23 +13,20 @@ glm::vec3 ForceCalculator::getImpulse(RigidBody* body1, RigidBody* body2, const 
 
 	const auto collision_point = collision_data.mTangent;
 	const auto e = body1->getRestitution() * body2->getRestitution();
-	const auto m1inv = body1->getMass() ? 1.f / body1->getMass() : 0.f;
-	const auto m2inv = body2->getMass() ? 1.f / body2->getMass() : 0.f;
-	const auto Inv1 = body1->getMomentofInertia() != glm::mat3{ 0.f } ? glm::inverse(body1->getMomentofInertia()) : glm::mat3{ 0.f };
-	const auto Inv2 = body2->getMomentofInertia() != glm::mat3{ 0.f } ? glm::inverse(body2->getMomentofInertia()) : glm::mat3{ 0.f };
+	const auto m1inv = body1->getMassInverse();
+	const auto m2inv = body2->getMassInverse();
+	const auto Inv1 = body1->getMomentofInertiaInverse();
+	const auto Inv2 = body2->getMomentofInertiaInverse();
 	const auto r1 = collision_point - body1->getPosition();
 	const auto r2 = collision_point - body2->getPosition();
 	const auto n = collision_data.mNormal;
-	const auto v1 = body1->getVelcoity() + glm::cross(r1, body1->getAngularVelcoity());
-	const auto v2 = body2->getVelcoity() + glm::cross(r2, body2->getAngularVelcoity());
+	const auto v1 = body1->getVelcoity() + glm::cross(body1->getAngularVelocity(), r1);
+	const auto v2 = body2->getVelcoity() + glm::cross(body2->getAngularVelocity(), r2);
 	const auto v12 = v2 - v1;
 
 	const auto impulse =
 		(1.f + e) * glm::dot(v12, n) /
-		((m1inv + m2inv) * n +
-			glm::cross(Inv1 * glm::cross(r1, n), r1) +
-			glm::cross(Inv2 * glm::cross(r2, n), r2)
-			);
+		(glm::dot((m1inv + m2inv) * n + glm::cross(Inv1 * glm::cross(r1, n), r1) + glm::cross(Inv2 * glm::cross(r2, n), r2), n));
 
 	return impulse * n;
 }
@@ -45,11 +42,18 @@ glm::vec3 ForceCalculator::getFrictionForce(RigidBody* body1, RigidBody* body2, 
 	const auto r1 = collision_point - body1->getPosition();
 	const auto r2 = collision_point - body2->getPosition();
 	const auto n = collision_data.mNormal;
-	const auto v1 = body1->getVelcoity() + glm::cross(r1, body1->getAngularVelcoity());
-	const auto v2 = body2->getVelcoity() + glm::cross(r2, body2->getAngularVelcoity());
+	const auto v1 = body1->getVelcoity() + glm::cross(body1->getAngularVelocity(), r1);
+	const auto v2 = body2->getVelcoity() + glm::cross(body2->getAngularVelocity(), r2);
 	const auto v12 = v2 - v1;
 	const auto mu = body1->getFriction() * body2->getFriction();
-	const auto dir = glm::normalize(v12 - glm::dot(v12, n) * n);
-	return dir * glm::length(normal_force) * mu;
+	auto dir = v12 - glm::dot(v12, n) * n;
+	if (glm::length(dir) >= 0.01f)
+	{
+		dir = glm::normalize(dir);
+	}
+	const auto friction = dir * glm::length(normal_force) * mu;
+	//const auto dir = v12 - glm::dot(v12, n) * n;
+	//const auto friction = dir * glm::length(normal_force) * mu * 0.1f;
+	return friction;
 }
 }

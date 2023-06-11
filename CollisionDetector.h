@@ -9,9 +9,19 @@
 
 namespace myfx
 {
+
 //-----------------------------------------------------------------------------
-// 衝突データ型
-struct CollisionData {
+// 衝突データクラス
+class CollisionData {
+public:
+	//-------------------------------------------------------------------------
+	// メンバ関数
+	CollisionData();
+	CollisionData(bool is_colliding, const glm::vec3& tangent, const glm::vec3& normal);
+	~CollisionData() { };
+
+	//-------------------------------------------------------------------------
+	// メンバ関数
 	bool		mIsColliding;
 	glm::vec3	mTangent;
 	glm::vec3	mNormal;

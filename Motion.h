@@ -31,6 +31,12 @@ public:
 		return mVelocity;
 	}
 
+	// Šp‘¬“x‚ğİ’è‚·‚é
+	void setAngularVelocity(const glm::vec3& angular_velocity)
+	{
+		mAngularVelocity = angular_velocity;
+	}
+
 	// Šp‘¬“x‚ğæ“¾‚·‚é
 	const glm::vec3& getAngularVelocity() const
 	{

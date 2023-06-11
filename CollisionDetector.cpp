@@ -5,6 +5,20 @@
 namespace myfx
 {
 //-----------------------------------------------------------------------------
+CollisionData::CollisionData()
+	: mIsColliding	{ false }
+	, mTangent		{ glm::zero<glm::vec3>() }
+	, mNormal		{ glm::zero<glm::vec3>() }
+{ }
+
+//-----------------------------------------------------------------------------
+CollisionData::CollisionData(bool is_colliding, const glm::vec3& tangent, const glm::vec3& normal)
+	: mIsColliding	{ is_colliding }
+	, mTangent		{ tangent }
+	, mNormal		{ normal }
+{ }
+
+//-----------------------------------------------------------------------------
 glm::vec3 CollisionDetector::getNormal(const AABB& box, const glm::vec3& point)
 {
 	auto tangent = getTangentOrSelf_(box, point);
@@ -74,19 +88,19 @@ CollisionData CollisionDetector::getCollisionData(const RigidBody& body1, const 
 		const auto box = AABB(*p_cubeshape);
 
 		// body2（球）の座標をbody1（直方体）の座標系に変換する
-		const auto sphere_pos = (body2.getPosition() - body1.getPosition()) * glm::inverse(body1.getRotation());
+		const auto sphere_pos = glm::inverse(body1.getRotation()) * (body2.getPosition() - body1.getPosition());
 		const auto p_sphereshape = dynamic_cast<SphereShape*>(body2.getCollisionShape());
 
 		// 衝突データを計算し、body1（直方体の）座標系からグローバル座標系に直す
 		auto collision_data = getCollisionData(box, sphere_pos);
 		collision_data.mIsColliding = glm::dot(collision_data.mNormal, sphere_pos - collision_data.mTangent) - p_sphereshape->getRadius() <= 0.f;
-		collision_data.mTangent = collision_data.mTangent * body1.getRotation() + body1.getPosition();
-		collision_data.mNormal = glm::normalize(body1.getRotation() * collision_data.mNormal);
+		collision_data.mTangent = body1.getRotation() * collision_data.mTangent + body1.getPosition();
+		collision_data.mNormal = glm::normalize(body1.getRotation() * -collision_data.mNormal);
 
 		return collision_data;
 	}
 
-	return CollisionData{ false, { 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f } };
+	return CollisionData{ false, { glm::zero<glm::vec3>() }, { glm::zero<glm::vec3>() }};
 }
 
 //-----------------------------------------------------------------------------

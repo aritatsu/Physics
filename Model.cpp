@@ -41,11 +41,13 @@ void Model::draw()
 			break;
 		// ‹…
 		case mygx::Model::Sphere:
-			glutSolidSphere(1.0, 32, 32);
+			//glutSolidSphere(1.0, 32, 32);
+			glutWireSphere(1.0, 16, 16);
 			break;
 		// ’¼•û‘Ì
 		case mygx::Model::Box:
 			glutSolidCube(1.f);
+			//glutWireCube(1.f);
 			break;
 		// ZX•½–Ê
 		case mygx::Model::ZXPlane:

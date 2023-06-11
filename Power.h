@@ -31,6 +31,18 @@ public:
 		return mForce;
 	}
 
+	// トルクを設定する
+	void setTorque(const glm::vec3& torque)
+	{
+		mTorque = torque;
+	}
+
+	// トルクを取得する
+	const glm::vec3& getTorque() const
+	{
+		return mTorque;
+	}
+
 private:
 	//-------------------------------------------------------------------------
 	// メンバ変数

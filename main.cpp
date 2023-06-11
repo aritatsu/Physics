@@ -1,8 +1,6 @@
 #if 1
 
-#include "ConstraintSolver.h"
-#include "CollisionDetector.h"
-#include "ForceCalculator.h"
+#include "PhysicsWorld.h"
 
 #include "CubeShape.h"
 #include "RigidBody.h"
@@ -36,11 +34,14 @@ void DrawGrid_(glm::f32 size);
 // グローバル変数
 myfx::RigidBody gRigidSphere;
 mygx::Model gSphereModel;
-myfx::RigidBody gRigidBox;
-mygx::Model gBoxModel;
-myfx::CollisionDetector gCollisionDetector;
-myfx::ConstraintSolver gConstraintSolver;
-myfx::ForceCalculator gForceCalculator;
+myfx::RigidBody gRigidBox1;
+myfx::RigidBody gRigidBox2;
+mygx::Model gBoxModel1;
+mygx::Model gBoxModel2;
+myfx::PhysicsWorld gPhysicsWorld;
+float camera_radius = 30.f;
+float camera_latitude = glm::pi<glm::f32>() / 6;
+float camera_longigtude = glm::pi<glm::f32>() / 4;
 
 
 //-----------------------------------------------------------------------------
@@ -66,22 +67,43 @@ int main(int argc, char* argv[])
 // 関数の定義
 void Init()
 {
-	gRigidSphere.setPosition({ 0.f, 10.f, 0.f });
+	gRigidSphere.setPosition({ 0.f, 1.f, 0.f });
+	gRigidSphere.setMass(1.f);
 	gRigidSphere.setCollisionShape(new myfx::SphereShape());
 	gRigidSphere.updateMomentofInertia();
+	gRigidSphere.setRestitution(0.5f);
+	gRigidSphere.setFriction(0.5f);
+	//gRigidSphere.setAngularVelocity({ 1.f, 0.f, 0.f });
+	//gRigidSphere.setForce({50.f, 0.f, 0.f});
+	gPhysicsWorld.addRigidBody(&gRigidSphere);
 	gSphereModel.setModelType(mygx::Model::Sphere);
 	const auto radius = dynamic_cast<myfx::SphereShape*>(gRigidSphere.getCollisionShape())->getRadius();
 	gSphereModel.setScale({ radius, radius, radius });
 	gSphereModel.updateMatrix();
 
-	gRigidBox.setPosition({ 0.f, -0.5f, 0.f });
-	gRigidBox.setCollisionShape(new myfx::CubeShape({ 10.f, 1.f, 10.f }));
-	gRigidBox.setMass(0.f);
-	gRigidBox.updateMomentofInertia();
-	gBoxModel.setModelType(mygx::Model::Box);
-	const auto scale = dynamic_cast<myfx::CubeShape*>(gRigidBox.getCollisionShape())->getScale();
-	gBoxModel.setScale(scale);
-	gBoxModel.updateMatrix();
+	gRigidBox1.setPosition({ 0.f, -0.5f, 0.f });
+	gRigidBox1.setRotation(myfx::Rotate(gRigidBox1.getRotation(), { 1.0, 0.f, 0.f }, glm::pi<glm::f32>() / 4));
+	//gRigidBox.setAngularVelocity({ 1.f, 0.f, 0.f });
+	gRigidBox1.setCollisionShape(new myfx::CubeShape({ 20.f, 1.f, 20.f }));
+	gRigidBox1.setMass(0.f);
+	gRigidBox1.updateMomentofInertia();
+	gPhysicsWorld.addRigidBody(&gRigidBox1);
+	gBoxModel1.setModelType(mygx::Model::Box);
+	const auto scale1 = dynamic_cast<myfx::CubeShape*>(gRigidBox1.getCollisionShape())->getScale();
+	gBoxModel1.setScale(scale1);
+	gBoxModel1.updateMatrix();
+
+	gRigidBox2.setPosition({ 0.f, -3.f, 3.f });
+	gRigidBox2.setRotation(myfx::Rotate(gRigidBox2.getRotation(), { 1.0, 0.f, 0.f }, -glm::pi<glm::f32>() / 4));
+	//gRigidBox.setAngularVelocity({ 1.f, 0.f, 0.f });
+	gRigidBox2.setCollisionShape(new myfx::CubeShape({ 20.f, 1.f, 20.f }));
+	gRigidBox2.setMass(0.f);
+	gRigidBox2.updateMomentofInertia();
+	gPhysicsWorld.addRigidBody(&gRigidBox2);
+	gBoxModel2.setModelType(mygx::Model::Box);
+	const auto scale2 = dynamic_cast<myfx::CubeShape*>(gRigidBox2.getCollisionShape())->getScale();
+	gBoxModel2.setScale(scale2);
+	gBoxModel2.updateMatrix();
 }
 
 
@@ -100,7 +122,11 @@ void Display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glm::vec3 center = { 0, 0, 0 };
-	glm::vec3 eye = center + glm::vec3(5, 8, 9) * 2.f;
+	glm::f32 camera_x = camera_radius * glm::sin(camera_longigtude) * glm::cos(camera_latitude);
+	glm::f32 camera_y = camera_radius * glm::sin(camera_latitude);
+	glm::f32 camera_z = camera_radius * glm::cos(camera_longigtude) * glm::cos(camera_latitude);
+	//camera_longigtude += glm::pi<glm::f32>() / 180.f;
+	glm::vec3 eye = center + glm::vec3(camera_x, camera_y, camera_z) ;
 	glm::vec3 up = { 0, 1, 0 };
 	gluLookAt
 	(
@@ -111,14 +137,15 @@ void Display()
 
 
 	// グリッドを描画
-	DrawGrid_(FIELD_SIZE);
+	//DrawGrid_(FIELD_SIZE);
 
 	// 軸の描画
 	DrawAxes_(FIELD_SIZE / 2);
 	
 	// モデルの描画
 	gSphereModel.draw();
-	gBoxModel.draw();
+	gBoxModel1.draw();
+	gBoxModel2.draw();
 
 	glutSwapBuffers();
 }
@@ -126,6 +153,7 @@ void Display()
 //-----------------------------------------------------------------------------
 void Idle()
 {
+#if 0
 	const glm::f32 dt = 1.f / 60.f;
 
 	gRigidSphere.setForce(glm::zero<glm::vec3>());
@@ -142,14 +170,24 @@ void Idle()
 
 	gRigidSphere.stepTime(dt);
 	gRigidBox.stepTime(dt);
+#endif
+	
+	gPhysicsWorld.updateWorld();
 
-	glm::mat4 sphere_trs = glm::translate(glm::identity<glm::mat4>(), gRigidSphere.getPosition());
-	gSphereModel.setRTMatrix(sphere_trs);
+	glm::mat4 sphere_trs{ glm::translate(glm::identity<glm::mat4>(), gRigidSphere.getPosition()) };
+	glm::mat4 sphere_rot{ gRigidSphere.getRotation() };
+	gSphereModel.setRTMatrix(sphere_trs * sphere_rot);
 	gSphereModel.updateMatrix();
 
-	glm::mat4 box_trs = glm::translate(glm::identity<glm::mat4>(), gRigidBox.getPosition());
-	gBoxModel.setRTMatrix(box_trs);
-	gBoxModel.updateMatrix();
+	glm::mat4 box_trs1{ glm::translate(glm::identity<glm::mat4>(), gRigidBox1.getPosition()) };
+	glm::mat4 box_rot1{ gRigidBox1.getRotation() };
+	gBoxModel1.setRTMatrix(box_trs1 * box_rot1);
+	gBoxModel1.updateMatrix();
+
+	glm::mat4 box_trs2{ glm::translate(glm::identity<glm::mat4>(), gRigidBox2.getPosition()) };
+	glm::mat4 box_rot2{ gRigidBox2.getRotation() };
+	gBoxModel2.setRTMatrix(box_trs2 * box_rot2);
+	gBoxModel2.updateMatrix();
 
 	glutPostRedisplay();
 }

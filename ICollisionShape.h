@@ -7,7 +7,7 @@ namespace myfx
 enum ShapeType
 {
 	ShapeTypeCube,
-	ShapeTypeSphere
+	ShapeTypeSphere,
 };
 
 //-----------------------------------------------------------------------------

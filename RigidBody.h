@@ -41,6 +41,12 @@ public:
 		return mInertia.getMass();
 	}
 
+	// 質量の逆数を取得する
+	glm::f32 getMassInverse() const
+	{
+		return mInertia.getMassInverse();
+	}
+
 	// 慣性モーメントを設定する
 	void setMomentofInertia(const glm::mat3& moment_of_inertia)
 	{
@@ -51,6 +57,12 @@ public:
 	const glm::mat3& getMomentofInertia() const
 	{
 		return mInertia.getMomentofInertia();
+	}
+
+	// 慣性モーメントの逆数を取得する
+	const glm::mat3& getMomentofInertiaInverse() const
+	{
+		return mInertia.getMomentofInertiaInverse();
 	}
 
 	// 剛体に加わる外力を設定する
@@ -65,6 +77,18 @@ public:
 		return mPower.getForce();
 	}
 
+	// 剛体に加わるトルクを設定する
+	void setTorque(const glm::vec3& torque)
+	{
+		mPower.setTorque(torque);
+	}
+
+	// 剛体に加わるトルクを取得する
+	const glm::vec3& getTorque() const
+	{
+		return mPower.getTorque();
+	}
+
 	// 速度を設定する
 	void setVelocity(const glm::vec3& velocity)
 	{
@@ -77,8 +101,14 @@ public:
 		return mMotion.getVelocity();
 	}
 
+	// 角加速度を設定する
+	void setAngularVelocity(const glm::vec3& angular_velocity)
+	{
+		mMotion.setAngularVelocity(angular_velocity);
+	}
+
 	// 角速度を取得する
-	const glm::vec3& getAngularVelcoity() const
+	const glm::vec3& getAngularVelocity() const
 	{
 		return mMotion.getAngularVelocity();
 	}
@@ -96,7 +126,7 @@ public:
 	}
 
 	// 回転行列を設定する
-	void setRotation(const glm::mat4& rotation)
+	void setRotation(const glm::mat3& rotation)
 	{
 		mTransform.setRotation(rotation);
 	}
@@ -149,8 +179,10 @@ public:
 	// 形状と質量を元に慣性モーメントを更新する
 	void updateMomentofInertia();
 
+#if 0
 	// 時刻をdt進める
 	void stepTime(glm::f32 dt);
+#endif
 
 private:
 	//-------------------------------------------------------------------------
