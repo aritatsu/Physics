@@ -149,10 +149,10 @@ void PhysicsWorld::doIntegrate_()
 //-----------------------------------------------------------------------------
 void PhysicsWorld::doResetForceTorque_()
 {
-    // èdóÕ
     for (glm::int32 idx = 0; idx < mRigidBodies.size(); idx++)
     {
         mRigidBodies[idx]->setForce(glm::zero<glm::vec3>());
+        mRigidBodies[idx]->setTorque(glm::zero<glm::vec3>());
     }
 }
 }

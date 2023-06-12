@@ -72,7 +72,7 @@ void Init()
 	gRigidSphere.setCollisionShape(new myfx::SphereShape());
 	gRigidSphere.updateMomentofInertia();
 	gRigidSphere.setRestitution(0.5f);
-	gRigidSphere.setFriction(0.5f);
+	gRigidSphere.setFriction(0.4f);
 	//gRigidSphere.setAngularVelocity({ 1.f, 0.f, 0.f });
 	//gRigidSphere.setForce({50.f, 0.f, 0.f});
 	gPhysicsWorld.addRigidBody(&gRigidSphere);
